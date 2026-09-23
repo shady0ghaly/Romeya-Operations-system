@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Romeya — نظام العمليات والجدولة الذكي | من البريف إلى التنفيذ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070913;
+      --bg-surface: #0E1326;
+      --bg-card: #141A33;
+      --bg-card-hover: #1A2242;
+      --romeya-gold: #D4AF37;
+      --romeya-gold-light: #F3E5AB;
+      --romeya-gold-glow: rgba(212, 175, 55, 0.25);
+      --romeya-cyan: #38BDF8;
+      --romeya-purple: #714B67;
+      --romeya-purple-light: #E0C8D8;
+      --romeya-emerald: #10B981;
+      --romeya-red: #EF4444;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-gold: rgba(212, 175, 55, 0.35);
+      --text-primary: #F8FAFC;
+      --text-secondary: #CBD5E1;
+      --text-muted: #8E9BAE;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: 'Tajawal', 'Cairo', sans-serif;
+      min-height: 100vh;
+      line-height: 1.6;
+      direction: rtl;
+      overflow-x: hidden;
+    }
+
+    .bg-grid {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app-container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 20px 80px 20px;
+    }
+
+    /* Top Ops Header */
+    .ops-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-gold);
+      border-radius: var(--radius-lg);
+      padding: 20px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-titles {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand-wordmark {
+      font-family: 'JetBrains Mono', sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      color: var(--romeya-gold);
+      text-shadow: 0 0 20px var(--romeya-gold-glow);
+    }
+
+    .sub-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--romeya-cyan);
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .brand-tagline {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      border: 1px solid transparent;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #fff;
+      border-color: #38bdf8;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--romeya-gold) 0%, #B89628 100%);
+      color: #070913;
+      border-color: var(--romeya-gold-light);
+      font-weight: 800;
+      box-shadow: 0 4px 14px var(--romeya-gold-glow);
+    }
+    .btn-gold:hover {
+      background: linear-gradient(135deg, #E6C24C 0%, var(--romeya-gold) 100%);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border-subtle);
+      color: var(--text-secondary);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .btn-odoo {
+      background: linear-gradient(135deg, #714B67 0%, #51364A 100%);
+      border-color: #9E6B91;
+      color: #FFFFFF;
+    }
+    .btn-odoo:hover {
+      background: linear-gradient(135deg, #855879 0%, #604058 100%);
+      box-shadow: 0 4px 14px rgba(113, 75, 103, 0.4);
+    }
+
+    .btn-dept {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: #38BDF8;
+      color: #38BDF8;
+    }
+    .btn-dept:hover {
+      background: rgba(56, 189, 248, 0.22);
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+    }
+    .btn-outline:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    /* Wizard Form Card */
+    .wizard-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin-bottom: 28px;
+    }
+
+    .wizard-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .wizard-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .form-grid-3col {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1.2fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .form-grid-3col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      color: #fff;
+      font-size: 12.5px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus {
+      border-color: var(--romeya-gold);
+    }
+
+    .brief-textarea {
+      width: 100%;
+      height: 240px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      color: #fff;
+      font-size: 12.5px;
+      font-family: inherit;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .brief-textarea:focus {
+      border-color: var(--romeya-gold);
+    }
+
+    /* Main Action Button Area */
+    .generate-action-bar {
+      margin-top: 24px;
+      text-align: center;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 24px;
+    }
+
+    /* Results Section */
+    .results-section {
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .results-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs-wrapper {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 8px;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+    }
+
+    .nav-tab {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-tab:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .nav-tab.active {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.18) 0%, rgba(212, 175, 55, 0.06) 100%);
+      color: var(--romeya-gold-light);
+      border: 1px solid var(--border-gold);
+    }
+
+    .tab-pane {
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Content Cards and Grids */
+    .card-grid-3col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .card-grid-2col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    @media (max-width: 900px) {
+      .card-grid-3col, .card-grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .content-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Tables */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      text-align: right;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    th {
+      background: rgba(0, 0, 0, 0.25);
+      color: var(--text-muted);
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge-crit {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid var(--romeya-red);
+      color: #FCA5A5;
+    }
+    .badge-normal {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--romeya-cyan);
+      color: #BAE6FD;
+    }
+
+    /* Gantt & Bars */
+    .gantt-row {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      gap: 12px;
+    }
+    .gantt-label {
+      width: 280px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+    .gantt-bar-wrap {
+      flex: 1;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    .gantt-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #0284c7, #38bdf8);
+      border-radius: 4px;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+    }
+    .gantt-bar.crit {
+      background: linear-gradient(90deg, #dc2626, #f87171);
+    }
+    .gantt-dates {
+      font-size: 11px;
+      color: var(--text-muted);
+      width: 220px;
+      text-align: left;
+      flex-shrink: 0;
+    }
+
+    /* Capacity Bar */
+    .capacity-bar-wrap {
+      background: rgba(255, 255, 255, 0.05);
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+    .capacity-bar {
+      height: 100%;
+      background: var(--romeya-gold);
+      border-radius: 4px;
+    }
+
+    /* Modals */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(4, 9, 26, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-gold);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7);
+      padding: 30px;
+      position: relative;
+      color: var(--text-primary);
+      animation: modalFadeIn 0.25s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.2s;
+    }
+    .modal-close-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+    .dept-card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 20px 0;
+    }
+    @media (max-width: 700px) {
+      .dept-card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .dept-item-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s;
+    }
+    .dept-item-card:hover {
+      border-color: var(--romeya-gold);
+      background: rgba(212, 175, 55, 0.04);
+    }
+    .dept-item-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .dept-item-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .color-swatch-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+    }
+    .color-preview-circle {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    /* Toast Notification */
+    .toast-notice {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      border: 1px solid var(--romeya-gold);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 13px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      display: none;
+      z-index: 10000;
+      animation: toastIn 0.3s ease-out;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translate(-50%, 15px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+
+  <div id="toast-notice" class="toast-notice"></div>
+
+  <div class="app-container">
+
+    <!-- Top Ops Header (Clean Typographic ROMEYA - No SVG) -->
+    <header class="ops-header">
+      <div class="brand-section">
+        <div class="brand-titles">
+          <div class="brand-name">
+            <span class="brand-wordmark">ROMEYA</span>
+            <span class="sub-title">محرك العمليات والجدولة الذكي</span>
+          </div>
+          <div class="brand-tagline">
+            وكالة Romeya للتسويق الرقمي • "من البريف إلى خطة التنفيذ المعتمدة"
+          </div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-secondary" onclick="RomeyaApp.clearAllFields()" title="تفريغ وإفراغ جميع حقول الإدخال">
+          <span>🗑️</span> تفريغ الحقول
+        </button>
+        <button class="btn btn-odoo" onclick="RomeyaApp.exportOdooCSV()" title="تنزيل ملف المهام مهيأ للاستيراد المباشر في نظام Odoo">
+          <span>📦</span> تصدير لـ Odoo (CSV)
+        </button>
+        <button class="btn btn-dept" onclick="RomeyaApp.openDepartmentModal()" title="استخراج وتصدير تقارير مخصصة لكل قسم على حدة">
+          <span>📑</span> تقارير الأقسام (PDF)
+        </button>
+        <button class="btn btn-primary" onclick="RomeyaApp.printMasterProjectPDF()" title="تصدير وثيقة المشروع التشغيلية والاستراتيجية الكاملة">
+          <span>📄</span> الخطة كاملة (PDF)
+        </button>
+      </div>
+    </header>
+
+    <!-- STEP 1 & 2: WIZARD FORM FOR ACCOUNT MANAGER -->
+    <section class="wizard-card">
+      <div class="wizard-title">
+        <span>⚡</span> استلام البريف وتحديد فريق العمل ومواعيد المشروع
+      </div>
+      <div class="wizard-subtitle">
+        يقوم مدير الحسابات بلصق بريف العميل في الحقل المخصص، وإدخال بيانات المشروع وأسماء القائمين عليه، ثم الضغط على زر التوليد لتظهر خطة التشغيل وجدول المهام فوراً. (جميع الحقول تبدأ فارغة تماماً).
+      </div>
+
+      <div class="form-grid-3col">
+        <!-- Column 1: The Brief Text (EMPTY BY DEFAULT) -->
+        <div>
+          <label class="form-label">١. نص بريف العميل (Brand Brief):</label>
+          <textarea id="brief-text" class="brief-textarea" placeholder="الصق هنا بريف العميل المكتمل (يقبل النصوص، النقاط، ومخرجات أداة الاستكشاف الأولى)..." autocomplete="off"></textarea>
+          <div style="display: flex; justify-content: space-between; margin-top: 6px;">
+            <span style="font-size: 11px; color: var(--text-muted);">الحقل فارغ افتراضياً للصق البريف الحقيقي</span>
+            <button class="btn btn-outline" style="font-size: 10px; padding: 2px 6px;" onclick="document.getElementById('brief-text').value = ''">مسح النص</button>
+          </div>
+        </div>
+
+        <!-- Column 2: Project Metadata & Dates (EMPTY BY DEFAULT) -->
+        <div>
+          <label class="form-label">٢. بيانات وتواريخ المشروع:</label>
+          <div class="form-group">
+            <label style="font-size: 11px; color: var(--text-secondary);">اسم المشروع / البراند:</label>
+            <input type="text" id="project-name" class="form-control" value="" placeholder="مثال: هوية براند..." autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label style="font-size: 11px; color: var(--text-secondary);">اسم العميل / الشركة:</label>
+            <input type="text" id="client-name" class="form-control" value="" placeholder="مثال: شركة..." autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label style="font-size: 11px; color: var(--text-secondary);">تاريخ بدء المشروع:</label>
+            <input type="date" id="start-date" class="form-control" value="" autocomplete="off" onchange="RomeyaApp.updateTargetLaunchDate()">
+          </div>
+          <div class="form-group">
+            <label style="font-size: 11px; color: var(--text-secondary);">مدة التنفيذ المقدرة (بالأسابيع - إدخال حر):</label>
+            <input type="number" id="project-duration" class="form-control" min="1" max="100" value="" placeholder="اكتب عدد أسابيع التنفيذ (مثال: 6)..." autocomplete="off" oninput="RomeyaApp.updateTargetLaunchDate()">
+          </div>
+          <div style="font-size: 11px; color: var(--romeya-gold);">
+            الموعد المستهدف للإطلاق: <strong id="target-launch-display">-- / -- / ----</strong>
+          </div>
+        </div>
+
+        <!-- Column 3: The Fixed Roles (EMPTY BY DEFAULT) -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+            <label class="form-label" style="margin-bottom: 0;">٣. أسماء القائمين على المشروع (حقول فارغة):</label>
+            <span style="font-size: 10px; color: var(--text-muted);">اكتب اسم الموظف المكلف</span>
+          </div>
+          
+          <div class="form-group">
+            <label style="font-size: 11px; color: var(--text-secondary);">✍️ كونتنت (Content Creator / Copywriter):</label>
+            <input type="text" id="role-content" class="form-control" value="" placeholder="اكتب اسم صانع المحتوى..." autocomplete="off">
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 11px; color: var(--text-secondary);">🎨 ديزاينر (Designer / Art Director):</label>
+            <input type="text" id="role-designer" class="form-control" value="" placeholder="اكتب اسم المصمم المسؤول..." autocomplete="off">
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 11px; color: var(--text-secondary);">📢 بابليشر (Publisher / Social Distribution):</label>
+            <input type="text" id="role-publisher" class="form-control" value="" placeholder="اكتب اسم مسؤول النشر والتوزيع..." autocomplete="off">
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 11px; color: var(--text-secondary);">💻 ديفلوبر (Developer / Web & Digital):</label>
+            <input type="text" id="role-developer" class="form-control" value="" placeholder="اكتب اسم مطور الويب..." autocomplete="off">
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 11px; color: var(--text-secondary);">🎬 ريل كريتور (Reel Creator / Short Video Specialist):</label>
+            <input type="text" id="role-reel" class="form-control" value="" placeholder="اكتب اسم صانع الريلز والفيديو..." autocomplete="off">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div class="form-group">
+              <label style="font-size: 10.5px; color: var(--text-muted);">🎯 ميديا باير:</label>
+              <input type="text" id="role-media" class="form-control" value="" placeholder="اسم الميديا باير..." style="font-size: 11px; padding: 6px 8px;" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label style="font-size: 10.5px; color: var(--text-muted);">👔 أكونت مانجر:</label>
+              <input type="text" id="role-account" class="form-control" value="" placeholder="اسم مدير الحسابات..." style="font-size: 11px; padding: 6px 8px;" autocomplete="off">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="generate-action-bar">
+        <button class="btn btn-primary" id="btn-generate-main" style="padding: 16px 48px; font-size: 16px; border-radius: 8px; font-weight: 800;" onclick="RomeyaApp.generateAll()">
+          <span>🚀</span> تشغيل محرك العمليات الذكي وتوليد الخطة بالكامل
+        </button>
+      </div>
+    </section>
+
+    <!-- RESULTS SECTION -->
+    <main id="results-section" class="results-section">
+      
+      <!-- NAV TABS -->
+      <nav class="nav-tabs-wrapper">
+        <button class="nav-tab active" data-tab="tab-overview" onclick="RomeyaApp.switchTab('tab-overview')">
+          <span>📊</span> الملخص وفريق العمل
+        </button>
+        <button class="nav-tab" data-tab="tab-research" onclick="RomeyaApp.switchTab('tab-research')">
+          <span>🧠</span> استخبارات وبحوث السوق المتقدمة
+        </button>
+        <button class="nav-tab" data-tab="tab-design" onclick="RomeyaApp.switchTab('tab-design')">
+          <span>🎨</span> التوجيه الفني والهوية البصرية
+        </button>
+        <button class="nav-tab" data-tab="tab-targeting" onclick="RomeyaApp.switchTab('tab-targeting')">
+          <span>🎬</span> استراتيجية المحتوى والميديا والريلز
+        </button>
+        <button class="nav-tab" data-tab="tab-tasks" onclick="RomeyaApp.switchTab('tab-tasks')">
+          <span>📋</span> جدول المهام التنفيذي الدقيق
+        </button>
+        <button class="nav-tab" data-tab="tab-gantt" onclick="RomeyaApp.switchTab('tab-gantt')">
+          <span>📈</span> مخطط جانت الزمني المرئي
+        </button>
+        <button class="nav-tab" data-tab="tab-team" onclick="RomeyaApp.switchTab('tab-team')">
+          <span>👥</span> ساعات العمل ومستوى الاستيعاب
+        </button>
+        <button class="nav-tab" data-tab="tab-role-pdf" onclick="RomeyaApp.switchTab('tab-role-pdf')">
+          <span>📄</span> بطاقات التكليف الفردية (PDF)
+        </button>
+      </nav>
+
+      <!-- TAB 1: OVERVIEW -->
+      <div class="tab-pane active" id="tab-overview">
+        <div class="card-grid-3col">
+          <div class="content-box">
+            <div class="section-title"><span>📌</span> بيانات المشروع الحالية</div>
+            <div style="font-size: 13px; line-height: 1.8;">
+              اسم المشروع: <strong id="ov-proj-title" style="color: var(--romeya-gold);">-</strong><br>
+              اسم العميل: <strong id="ov-client-title" style="color: #fff;">-</strong><br>
+              <div id="ov-dates-summary" style="margin-top: 6px; font-size: 12px; color: var(--text-secondary);">-</div>
+            </div>
+          </div>
+          <div class="content-box">
+            <div class="section-title"><span>👥</span> فريق العمل المكلف</div>
+            <div id="ov-team-summary" style="font-size: 12px; line-height: 1.9; color: var(--text-secondary);">
+              -
+            </div>
+          </div>
+          <div class="content-box">
+            <div class="section-title"><span>⏱️</span> مؤشرات الحجم وساعات العمل</div>
+            <div style="font-size: 13px; line-height: 1.8;">
+              إجمالي الساعات التقديرية: <strong id="ov-total-hours" style="color: var(--romeya-cyan); font-size: 18px;">-</strong><br>
+              المسار الحرج (Critical Path): <strong style="color: var(--romeya-red);">إلزامي ومحدد</strong><br>
+              بوابات الاعتماد مع العميل: <strong style="color: var(--romeya-gold);">6 بوابات رئيسية</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: ADVANCED MARKET RESEARCH (6 AXES) -->
+      <div class="tab-pane" id="tab-research">
+        <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <div style="font-weight: 800; color: #fff; font-size: 16px;">🧠 استخبارات وبحوث السوق المتقدمة (Market & Competitive Intelligence)</div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 3px;">
+              تحليل عميق يربط بين حجم السوق، الثغرة التنافسية الذهبية، الدوافع النفسية غير المعلنة للشراء، ومصفوفة إبطال الاعتراضات.
+            </div>
+          </div>
+          <button class="btn btn-dept" onclick="RomeyaApp.printDepartmentPDF('research_media')">
+            <span>📄</span> تصدير تقرير قسم الأبحاث والميديا (PDF)
+          </button>
+        </div>
+
+        <div class="card-grid-2col">
+          <div class="content-box">
+            <div style="font-weight: 800; color: var(--romeya-cyan); font-size: 14px; margin-bottom: 8px;">📊 ١. مؤشرات حجم السوق والنمو المركب (CAGR & Sizing)</div>
+            <div id="res-market-trends" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.8;">...</div>
+          </div>
+
+          <div class="content-box">
+            <div style="font-weight: 800; color: var(--romeya-red); font-size: 14px; margin-bottom: 8px;">⚔️ ٢. مصفوفة تفكيك المنافسين واقتناص الثغرة الذهبية (Golden Gap)</div>
+            <div id="res-competitor-gaps" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.8;">...</div>
+          </div>
+
+          <div class="content-box">
+            <div style="font-weight: 800; color: var(--romeya-gold); font-size: 14px; margin-bottom: 8px;">👑 ٣. التشريح النفسي والسلوكي للجمهور (Buying Triggers)</div>
+            <div id="res-audience-persona" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.8;">...</div>
+          </div>
+
+          <div class="content-box">
+            <div style="font-weight: 800; color: var(--romeya-emerald); font-size: 14px; margin-bottom: 8px;">🛡️ ٤. مصفوفة إبطال الاعتراضات ومخاوف الشراء (Risk Reversal)</div>
+            <div id="res-objections-handling" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.8;">...</div>
+          </div>
+        </div>
+
+        <div class="content-box">
+          <div style="font-weight: 800; color: #a855f7; font-size: 14px; margin-bottom: 8px;">🔎 ٥. استخبارات الكلمات المفتاحية ونوايا البحث الشرائية (High-Intent Keywords)</div>
+          <div id="res-search-intent" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.8;">...</div>
+        </div>
+      </div>
+
+      <!-- TAB 3: DESIGN & BRANDING -->
+      <div class="tab-pane" id="tab-design">
+        <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <div style="font-weight: 800; color: #fff; font-size: 16px;">🎨 التوجيه الفني والهوية البصرية (Art Direction & Visual Territories)</div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 3px;">
+              صياغة 3 أقاليم بصرية متمايزة بالكامل، رمزية الشعار، والباليت اللوني الدقيق لتوجيه فريق التصميم.
+            </div>
+          </div>
+          <button class="btn btn-dept" onclick="RomeyaApp.printDepartmentPDF('design_branding')">
+            <span>📄</span> تصدير تقرير قسم التصميم والهوية (PDF)
+          </button>
+        </div>
+
+        <div class="card-grid-3col">
+          <div class="content-box">
+            <div style="font-weight: 800; color: var(--romeya-gold); font-size: 14px; margin-bottom: 8px;">🏛️ الأقاليم البصرية المقترحة (Visual Territories)</div>
+            <div id="des-territories" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.8;">...</div>
+          </div>
+
+          <div class="content-box">
+            <div style="font-weight: 800; color: var(--romeya-cyan); font-size: 14px; margin-bottom: 8px;">⚜️ رمزية الشعار والمونوغرام (Logo Concept)</div>
+            <div id="des-logo" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.8;">...</div>
+          </div>
+
+          <div class="content-box">
+            <div style="font-weight: 800; color: var(--romeya-emerald); font-size: 14px; margin-bottom: 8px;">🎨 لوحة الألوان المعتمدة (Palette & Codes)</div>
+            <div id="des-palette" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.8;">...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: TARGETING, REELS & MEDIA BUYING -->
+      <div class="tab-pane" id="tab-targeting">
+        <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <div style="font-weight: 800; color: #fff; font-size: 16px;">🎬 استراتيجية المحتوى والميديا باينج والريلز (Content, Media & Reels Engine)</div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 3px;">
+              خطافات وسيناريوهات الريلز الجاهزة للإنتاج، استراتيجية الميديا باينج، وتوزيع الميزانية عبر القنوات الرقمية.
+            </div>
+          </div>
+          <button class="btn btn-dept" onclick="RomeyaApp.printDepartmentPDF('content_reels')">
+            <span>📄</span> تصدير تقرير قسم المحتوى والريلز (PDF)
+          </button>
+        </div>
+
+        <div class="card-grid-3col">
+          <div class="content-box">
+            <div style="font-weight: 800; color: var(--romeya-cyan); font-size: 14px; margin-bottom: 8px;">📱 المنصات الموصى بها وتوزيع الميزانية</div>
+            <div id="tgt-platforms" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.8;">...</div>
+          </div>
+          <div class="content-box">
+            <div style="font-weight: 800; color: var(--romeya-emerald); font-size: 14px; margin-bottom: 8px;">🎯 شرائح الاستهداف وسلوك الشراء المسبق</div>
+            <div id="tgt-audience" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.8;">...</div>
+          </div>
+          <div class="content-box">
+            <div style="font-weight: 800; color: var(--romeya-gold); font-size: 14px; margin-bottom: 8px;">🎬 خطافات وسيناريوهات الريلز (Viral Reel Hooks)</div>
+            <div id="tgt-hooks" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.8;">...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: MASTER TASKS SCHEDULE -->
+      <div class="tab-pane" id="tab-tasks">
+        <div style="margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <div style="font-weight: 800; color: #fff; font-size: 16px;">📋 جدول المهام التنفيذي الدقيق (أيام العمل الفعلية: الأحد - الخميس)</div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 3px;">
+              يشمل ٢٠ مهمة أساسية مقسمة بدقة مع تحديد المسار الحرج (Critical Path) وبوابات الاعتماد الرسمية.
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-odoo" onclick="RomeyaApp.exportOdooCSV()" style="font-size: 12px; padding: 8px 14px;">
+              <span>📦</span> تصدير لـ Odoo (CSV)
+            </button>
+            <button class="btn btn-primary" onclick="RomeyaApp.printMasterProjectPDF()" style="font-size: 12px; padding: 8px 14px;">
+              <span>📄</span> طباعة الخطة كاملة (PDF)
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 50px;">كود</th>
+                <th>اسم المهمة والتسليمة المطلوبة</th>
+                <th style="width: 110px;">القسم</th>
+                <th style="width: 140px;">المسؤول المكلف</th>
+                <th style="width: 60px; text-align: center;">ساعات</th>
+                <th style="width: 110px;">تاريخ البدء</th>
+                <th style="width: 110px;">تاريخ الاستحقاق</th>
+                <th style="width: 90px;">المسار الحرج</th>
+              </tr>
+            </thead>
+            <tbody id="tasks-table-body">
+              <!-- Injected dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 6: GANTT CHART -->
+      <div class="tab-pane" id="tab-gantt">
+        <div style="margin-bottom: 14px; font-weight: 800; color: #fff; font-size: 16px;">
+          📈 مخطط جانت الزمني لمراحل المشروع (أيام العمل الفعلية وتتابع المسار الحرج)
+        </div>
+        <div class="content-box" style="padding: 12px;">
+          <div id="gantt-rows-container" style="max-height: 550px; overflow-y: auto;">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 7: TEAM CAPACITY -->
+      <div class="tab-pane" id="tab-team">
+        <div style="margin-bottom: 14px; font-weight: 800; color: #fff; font-size: 16px;">
+          👥 توزيع ساعات العمل ومستوى الاستيعاب لكل فرد في الفريق
+        </div>
+        <div class="card-grid-3col" id="team-capacity-grid">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+
+      <!-- TAB 8: INDIVIDUAL ROLE PDF CARDS -->
+      <div class="tab-pane" id="tab-role-pdf">
+        <div style="margin-bottom: 14px;">
+          <div style="font-weight: 800; color: #fff; font-size: 16px;">📄 بطاقات المهام والتسليمات الفردية (طباعة PDF لكل موظف على حدى)</div>
+          <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+            استخراج وطباعة تقرير رسمي لكل موظف يحتوي على مهامه فقط، وساعات العمل، ومواعيد الاستحقاق، وخانة توقيع الاستلام.
+          </div>
+        </div>
+
+        <div class="card-grid-3col" id="role-pdf-cards-container">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+
+    </main>
+
+  </div><!-- /app-container -->
+
+  <!-- ODOO IMPORT GUIDE MODAL -->
+  <div id="odoo-modal" class="modal-overlay" onclick="if(event.target === this) RomeyaApp.closeOdooModal()">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="RomeyaApp.closeOdooModal()">&times;</button>
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <div style="background: #714B67; color: #fff; width: 44px; height: 44px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px;">📦</div>
+        <div>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 900; color: #fff;">تم تجهيز وتصدير ملف المهام لنظام Odoo بنجاح!</h3>
+          <span style="font-size: 11.5px; color: var(--text-muted);">الملف مهيأ بصيغة CSV المتوافقة تماماً مع موديول المشاريع في أودو (project.task) بترميز UTF-8 مع BOM لدعم اللغة العربية 100%.</span>
+        </div>
+      </div>
+
+      <div style="background: rgba(113, 75, 103, 0.15); border: 1px solid #714B67; padding: 18px; border-radius: 8px; margin: 16px 0;">
+        <h4 style="margin: 0 0 10px 0; font-size: 13.5px; color: #E0C8D8; font-weight: 800;">🚀 خطوات استيراد المهام في أودو (Import into Odoo):</h4>
+        <ol style="margin: 0; padding-right: 20px; font-size: 12px; line-height: 1.9; color: var(--text-primary);">
+          <li>افتح نظام <strong>Odoo</strong> وانتقل إلى تطبيق <strong>Projects (المشاريع)</strong>.</li>
+          <li>ادخل على المشروع المطلوب أو اذهب إلى تبويب <strong>Tasks (المهام)</strong>.</li>
+          <li>في أعلى الصفحة بجانب شريط البحث، اضغط على زر <strong>⚙️ Favorites (المفضلة)</strong> ⬅️ ثم اختر <strong>Import records (استيراد سجلات)</strong>.</li>
+          <li>اضغط على <strong>Upload File</strong> وارفع ملف الـ CSV الذي تم تنزيله الآن على جهازك.</li>
+          <li>سيتعرف Odoo تلقائياً على كافة الأعمدة:
+            <span style="color: var(--romeya-gold);">[اسم المهمة: Name]</span>،
+            <span style="color: var(--romeya-gold);">[المشروع: Project]</span>،
+            <span style="color: var(--romeya-gold);">[المسؤول: Assigned to]</span>،
+            <span style="color: var(--romeya-gold);">[الاستحقاق: Deadline]</span>،
+            <span style="color: var(--romeya-gold);">[الوصف: Description]</span>،
+            <span style="color: var(--romeya-gold);">[الوسوم: Tags]</span>.
+          </li>
+          <li>اضغط على زر <strong>Test</strong> للتحقق، ثم اضغط <strong>Import</strong> وستظهر كافة المهام مجدولة ومسندة لموظفيك فوراً!</li>
+        </ol>
+      </div>
+
+      <div style="text-align: left; margin-top: 18px;">
+        <button class="btn btn-secondary" onclick="RomeyaApp.closeOdooModal()">إغلاق التنبيه</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPARTMENT PDF EXPORT MODAL -->
+  <div id="dept-modal" class="modal-overlay" onclick="if(event.target === this) RomeyaApp.closeDepartmentModal()">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="RomeyaApp.closeDepartmentModal()">&times;</button>
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <div style="background: rgba(56, 189, 248, 0.15); border: 1px solid #38BDF8; color: #38BDF8; width: 44px; height: 44px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px;">📑</div>
+        <div>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 900; color: #fff;">تصدير تقارير الأقسام التنفيذية (PDF) — وكالة Romeya</h3>
+          <span style="font-size: 11.5px; color: var(--text-muted);">اختر القسم المطلوب لتوليد وثيقة عمل مستقلة ومنسقة للطباعة والحفظ A4 تشمل توجيهات البريف والمهام والتوقيعات الرسمية.</span>
+        </div>
+      </div>
+
+      <div class="dept-card-grid">
+        <!-- Dept 1: Research & Media Buying -->
+        <div class="dept-item-card">
+          <div>
+            <div class="dept-item-title"><span>🧠</span> قسم الأبحاث والميديا باينج</div>
+            <div class="dept-item-desc">
+              استخبارات السوق الخمسة، ثغرة المنافسين، دراسة الجمهور، وميزانيات الميديا باينج ونسب المنصات وبكسلات التتبع.
+            </div>
+          </div>
+          <button class="btn btn-primary" style="font-size: 12px; padding: 8px 12px;" onclick="RomeyaApp.printDepartmentPDF('research_media')">
+            <span>📄</span> تصدير تقرير القسم (PDF)
+          </button>
+        </div>
+
+        <!-- Dept 2: Creative Content & Reels -->
+        <div class="dept-item-card">
+          <div>
+            <div class="dept-item-title"><span>✍️</span> قسم المحتوى والكتابة والريلز</div>
+            <div class="dept-item-desc">
+              القصة التأسيسية، نبرة الصوت، 4 خطافات وسيناريوهات ريلز كاملة مع وصف المشهد والمؤثرات، وعلاج مخاوف الشراء.
+            </div>
+          </div>
+          <button class="btn btn-primary" style="font-size: 12px; padding: 8px 12px;" onclick="RomeyaApp.printDepartmentPDF('content_reels')">
+            <span>📄</span> تصدير تقرير القسم (PDF)
+          </button>
+        </div>
+
+        <!-- Dept 3: Design & Art Direction -->
+        <div class="dept-item-card">
+          <div>
+            <div class="dept-item-title"><span>🎨</span> قسم التصميم والهوية البصرية</div>
+            <div class="dept-item-desc">
+              الأقاليم البصرية الثلاثة، رمزية الشعار والمونوغرام، باليت الألوان الدقيق، التايبوغرافي ومواصفات التغليف.
+            </div>
+          </div>
+          <button class="btn btn-primary" style="font-size: 12px; padding: 8px 12px;" onclick="RomeyaApp.printDepartmentPDF('design_branding')">
+            <span>📄</span> تصدير تقرير القسم (PDF)
+          </button>
+        </div>
+
+        <!-- Dept 4: Operations, Accounts & Web -->
+        <div class="dept-item-card">
+          <div>
+            <div class="dept-item-title"><span>⚙️</span> قسم العمليات والحسابات والويب</div>
+            <div class="dept-item-desc">
+              بوابات الاعتماد مع العميل (Gates 1-6)، المسار الحرج، متطلبات المتجر الرقمي، وإدارة ساعات العمل ومخاطر التأخير.
+            </div>
+          </div>
+          <button class="btn btn-primary" style="font-size: 12px; padding: 8px 12px;" onclick="RomeyaApp.printDepartmentPDF('ops_accounts')">
+            <span>📄</span> تصدير تقرير القسم (PDF)
+          </button>
+        </div>
+      </div>
+
+      <div style="background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border-subtle); border-radius: 8px; padding: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <span style="font-size: 11.5px; color: var(--text-muted);">تريد وثيقة واحدة مجمعة تشمل كافة الأقسام مفصولة بصفحات A4 مستقلة؟</span>
+        <button class="btn btn-secondary" onclick="RomeyaApp.printDepartmentPDF('all')">
+          <span>📑</span> تصدير كافة الأقسام معاً (A4 مجمع)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Comprehensive Romeya Operations Application
+    window.RomeyaApp = const_RomeyaApp = {
+      state: {
+        projectName: '',
+        clientName: '',
+        startDate: '',
+        durationWeeks: 6,
+        selectedTeam: {},
+        generatedTasks: [],
+        research: {},
+        design: {},
+        targeting: {}
+      },
+
+      init: function() {
+        this.clearAllInputs(false);
+      },
+
+      clearAllInputs: function(showAlert) {
+        const inputIds = [
+          'brief-text', 'project-name', 'client-name', 'start-date',
+          'project-duration', 'role-content', 'role-designer',
+          'role-publisher', 'role-developer', 'role-reel',
+          'role-media', 'role-account'
+        ];
+        inputIds.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+        const displayEl = document.getElementById('target-launch-display');
+        if (displayEl) displayEl.textContent = '-- / -- / ----';
+        const resSec = document.getElementById('results-section');
+        if (resSec) resSec.classList.remove('active');
+        if (showAlert) {
+          this.showToast('تم تفريغ كافة الحقول بنجاح.');
+        }
+      },
+
+      clearAllFields: function() {
+        this.clearAllInputs(true);
+      },
+
+      showToast: function(msg) {
+        const t = document.getElementById('toast-notice');
+        if (!t) return;
+        t.textContent = msg;
+        t.style.display = 'block';
+        setTimeout(() => {
+          t.style.display = 'none';
+        }, 4000);
+      },
+
+      safeSetText: function(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text || '';
+      },
+
+      safeSetHTML: function(id, html) {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = html || '';
+      },
+
+      addWorkingDays: function(startDateStr, daysToAdd) {
+        if (!startDateStr) return '';
+        let current = new Date(startDateStr);
+        let added = 0;
+        // Sun-Thu work days in Egypt/GCC: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu. 5=Fri, 6=Sat
+        const workingDayIndices = [0, 1, 2, 3, 4];
+        
+        while (!workingDayIndices.includes(current.getDay())) {
+          current.setDate(current.getDate() + 1);
+        }
+
+        while (added < daysToAdd) {
+          current.setDate(current.getDate() + 1);
+          if (workingDayIndices.includes(current.getDay())) {
+            added++;
+          }
+        }
+
+        const y = current.getFullYear();
+        const m = String(current.getMonth() + 1).padStart(2, '0');
+        const d = String(current.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      },
+
+      formatArabicDate: function(dateStr) {
+        if (!dateStr) return '-- / -- / ----';
+        const parts = dateStr.split('-');
+        if (parts.length < 3) return dateStr;
+        const d = new Date(parts[0], parts[1] - 1, parts[2]);
+        const dayNames = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+        const monthNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+        return `${dayNames[d.getDay()]} ${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+      },
+
+      updateTargetLaunchDate: function() {
+        const startStr = document.getElementById('start-date').value;
+        const durationInput = document.getElementById('project-duration').value;
+        const weeks = parseInt(durationInput, 10);
+        if (!startStr || isNaN(weeks) || weeks <= 0) {
+          document.getElementById('target-launch-display').textContent = '-- / -- / ----';
+          return;
+        }
+        const totalWorkDays = weeks * 5;
+        const targetDate = this.addWorkingDays(startStr, totalWorkDays);
+        document.getElementById('target-launch-display').textContent = this.formatArabicDate(targetDate);
+      },
+
+      generateAll: function() {
+        try {
+          const briefEl = document.getElementById('brief-text');
+          let brief = briefEl ? briefEl.value.trim() : '';
+
+          if (!brief) {
+            // Provide intelligent default model brief so user can immediately experience all tabs & buttons without blocking
+            brief = 'براند عطور نيش فاخرة وتجربة أجدادية أصيلة في السوق العربي والخليجي تعتمد على التعتيق والهدوء الصرحي والوقار.';
+            this.showToast('تم تشغيل المحرك على نموذج عمل فاخر لتجربة كافة الوظائف فوراً.');
+          }
+
+          let projName = document.getElementById('project-name').value.trim();
+          let clientName = document.getElementById('client-name').value.trim();
+          let startStr = document.getElementById('start-date').value;
+          const durationVal = document.getElementById('project-duration').value.trim();
+
+          if (!startStr) {
+            const today = new Date();
+            const y = today.getFullYear();
+            const m = String(today.getMonth() + 1).padStart(2, '0');
+            const d = String(today.getDate()).padStart(2, '0');
+            startStr = `${y}-${m}-${d}`;
+          }
+
+          if (!projName) {
+            const firstLine = brief.split('\n')[0].replace(/[#*:-]/g, '').trim();
+            projName = firstLine.length > 3 && firstLine.length < 50 ? firstLine : 'مشروع هوية العلامة التجارية';
+          }
+
+          if (!clientName) {
+            clientName = 'عميل وكالة Romeya';
+          }
+
+          const weeks = parseInt(durationVal, 10) || 6;
+          const totalWorkDays = weeks * 5;
+          const targetLaunchDate = this.addWorkingDays(startStr, totalWorkDays);
+
+          // Fetch manual free-text employee names for the fixed roles
+          const contentName = document.getElementById('role-content').value.trim() || 'صانع المحتوى';
+          const designerName = document.getElementById('role-designer').value.trim() || 'المصمم';
+          const publisherName = document.getElementById('role-publisher').value.trim() || 'مسؤول النشر';
+          const developerName = document.getElementById('role-developer').value.trim() || 'مطور الويب';
+          const reelCreatorName = document.getElementById('role-reel').value.trim() || 'صانع الريلز والفيديو';
+          const mediaBuyerName = document.getElementById('role-media').value.trim() || 'الميديا باير';
+          const accountManagerName = document.getElementById('role-account').value.trim() || 'مدير الحسابات';
+          const operationsName = "شادي عاطف حسن غالي (مدير العمليات - Romeya)";
+
+          const assigned = {
+            content: contentName,
+            designer: designerName,
+            publisher: publisherName,
+            developer: developerName,
+            reelCreator: reelCreatorName,
+            mediaBuyer: mediaBuyerName,
+            accountManager: accountManagerName,
+            operations: operationsName
+          };
+
+          this.state.projectName = projName;
+          this.state.clientName = clientName;
+          this.state.startDate = startStr;
+          this.state.durationWeeks = weeks;
+          this.state.targetLaunchDate = targetLaunchDate;
+          this.state.selectedTeam = assigned;
+
+          // Dynamic intelligence generation based on brief content keywords
+          const isFood = /أكل|مطعم|طعام|وجبات|كافيه|ساندوتش|حلويات|مطبخ|جلاش/i.test(brief);
+          const isApp = /تطبيق|ابلكيشن|منصة|هدايا|متجر|سلة|شحن|إلكتروني|موقع/i.test(brief);
+
+          if (isFood) {
+            this.state.research = {
+              trends: "قطاع الأغذية والمطاعم المبتكرة يشهد نمواً مركباً يبلغ 14.8% سنوياً في المنطقة. أبرز التوجهات تشمل الإقبال الكثيف على الوجبات السريعة الفاخرة (Fast-Casual) التي تمزج النكهات التراثية المحبوبة بأسلوب تقديم مبتكر، وتفضيل 72% من العملاء للعلامات التي تضمن سرعة التوصيل مع الحفاظ على القرمشة والحرارة.",
+              gaps: "نقاط الضعف الجوهرية لدى المنافسين في السوق تتمثل في: ضعف ثبات جودة الطعام في ساعات الذروة، تدهور جودة العبوات أثناء التوصيل وفقدان القرمشة، ورتابة المحتوى الإعلاني المكرر. الثغرة الذهبية للبراند هي الهيمنة على مفهوم 'القرمشة الفاخرة المبتكرة' بتغليف هندسي عازل للحرارة وهوية بصرية عصرية مبهجة تشعل الشهية.",
+              audience: "الشريحة الأساسية: الشباب وطلاب الجامعات والموظفون (18-36 سنة) الباحثون عن تجربة طعام لذيذة وسريعة تجمع الأصدقاء. الشريحة الثانوية: العائلات في عطلات نهاية الأسبوع. محفزات الشراء: الرائحة النفاذة، صوت القرمشة الحقيقي، وتجربة فتح العبوة الساخنة والمثالية للمشاركة.",
+              objections: "المخاوف الرئيسية: وصول الطعام بارداً أو ذابلاً بسبب التوصيل، أو ارتفاع السعر مقارنة بالوجبات التقليدية. خطة العلاج والتطمين: استعراض التغليف الهندسي الحراري بالفيديو، وتقديم ضمان إعادة الطلب أو التعويض في حال عدم رضا العميل عن القرمشة.",
+              search: "الكلمات المفتاحية عالية النية الشرائية: 'أفضل مطعم ساندوتشات قريب'، 'أكل مقرمش ديليفري سريع'، 'عروض وجبات أصدقاء'. الأسئلة الشائعة للعملاء: 'هل التوصيل يحافظ على القرمشة؟' و 'ما هي أشهر الأصناف المميزة لديكم؟'."
+            };
+            this.state.design = {
+              territories: "• <strong>الإقليم الأول (الحيوية والشهية المشتعلة):</strong> درجات البرتقالي الناري والأصفر المقرمش مع خطوط تايبوغرافي عريضة تثير الحواس.<br>• <strong>الإقليم الثاني (المطبخ المعاصر والأصالة):</strong> تصوير احترافي مقرب جداً لتفاصيل الخَبز وتوريق العجين ولمعان الحشوات الساخنة.<br>• <strong>الإقليم الثالث (المودرن فاست كاجوال):</strong> خطوط هندسية مينيمليست لعلب التيك أواي مع ورق زبدة مطبوع بأيقونات مرحة.",
+              logo: "شعار تايبوغرافي ديناميكي مرن يدمج انسيابية وتوريق العجين مع لمسات مرحة تعبر عن البهجة والمشاركة، صُمم ليكون واضحاً وجذاباً على أكياس التوصيل وواجهات الفروع وشاشات الموبايل.",
+              palette: `
+                <div class="color-swatch-box"><div style="display:flex;align-items:center;gap:8px;"><div class="color-preview-circle" style="background:#f97316;"></div><strong>البرتقالي الدافئ (#F97316)</strong></div><span style="font-size:10px;color:var(--text-muted);">فتح الشهية والحيوية</span></div>
+                <div class="color-swatch-box"><div style="display:flex;align-items:center;gap:8px;"><div class="color-preview-circle" style="background:#eab308;"></div><strong>الأصفر الذهبي المقرمش (#EAB308)</strong></div><span style="font-size:10px;color:var(--text-muted);">الدفء والبهجة</span></div>
+                <div class="color-swatch-box"><div style="display:flex;align-items:center;gap:8px;"><div class="color-preview-circle" style="background:#1c1917;"></div><strong>الأسود الفحمي المات (#1C1917)</strong></div><span style="font-size:10px;color:var(--text-muted);">الأناقة والتباين العالي</span></div>
+              `
+            };
+            this.state.targeting = {
+              platforms: "• <strong>تيك توك وإنستغرام ريلز (60% من الميزانية):</strong> محتوى ASMR لقرمشة الوجبات وسحب الجبن وتجارب العملاء الحية.<br>• <strong>إعلانات جوجل سيرش وخرائط جوجل (25% من الميزانية):</strong> استهداف البحث المحلي (مطاعم قريبة، أكل سريع، ديليفري).<br>• <strong>سناب شات (15% من الميزانية):</strong> عروض الغداء السريع ومجموعات الأصدقاء والكومبو.",
+              audience: "عشاق الأكل السريع المبتكر، رواد الفاست كاجوال، الفئات العمرية 18-35 سنة ضمن نطاق توصيل الفروع (5-8 كم).",
+              hooks: `• <strong>الريل 1 (الصوت الحقيقي):</strong> [Visual: لقطة ماكرو بطيئة لكسر الساندوتش] + [Audio SFX: صوت قرمشة مدوي بنقاء عالي] ➡️ 'لو ماسمعتش الصوت ده بودانك.. الساندوتش عليك ببلاش!'<br>
+                      • <strong>الريل 2 (سحب الجبن والصلصة):</strong> [Visual: سحب الجبنة السايحة تمتد لنصف متر] ➡️ 'في تفاصيل مينفعش تطلبها غير من ناس بتفهم مزاجك صح.'<br>
+                      • <strong>الريل 3 (حل ورطة الجوع):</strong> [Visual: نظرة للساعة 11:30 مساءً] ➡️ 'الجوع ده مش محتاج تفكير.. دوس على اللينك وطلبك عندك في 30 دقيقة مقرمش وسخن.'`
+            };
+          } else if (isApp) {
+            this.state.research = {
+              trends: "قطاع التجارة الرقمية والتطبيقات الذكية في المنطقة يسجل نمواً استثنائياً يتجاوز 21.4% سنوياً. التوجه الغالب هو انتقال 84% من عمليات الشراء والتصفح إلى الهواتف الذكية، مع اشتراط المستخدمين لتجربة دفع في خطوة واحدة (One-Click Checkout) وإمكانية التتبع اللحظي للشحنات والطلبات.",
+              gaps: "أبرز عيوب التطبيقات المنافسة: تعقيد خطوات التسجيل وتكرار الأعطال البرمجية أثناء الدفع، وبطء استجابة الدعم الفني، وغموض أوقات التوصيل. الثغرة التنافسية الكبرى للتطبيق هي تقديم تجربة استخدام فائقة البساطة تتيح إتمام أي طلب في أقل من 3 نقرات مع شفافية كاملة وضمان مواعيد الاستلام.",
+              audience: "مستخدمو الهواتف الذكية والمهتمون بالحلول الرقمية السريعة (20-45 سنة)، محبو الراحة وإنجاز المهام من مكانهم. محفزات الشراء: سهولة التصفح، الأمان العالي، توفر خيارات دفع متعددة (Apple Pay، بطاقات، تابي/تمارا)، والعروض الحصرية بالتطبيق.",
+              objections: "المخاوف الرئيسية: صعوبة استرجاع المنتجات، أو الخوف من تأخر التسليم، أو مشاكل الخصوصية والدفع الإلكتروني. خطة العلاج والتطمين: توفير خدمة عملاء حية على مدار الساعة داخل التطبيق، وسياسة استرجاع مرنة وفورية، وضمان أمان البيانات والدفع المشفر.",
+              search: "الكلمات المفتاحية عالية النية الشرائية: 'تطبيق هدايا سريع'، 'توصيل هدايا في نفس اليوم'، 'أفضل تطبيق تسوق إلكتروني'. الأسئلة الشائعة: 'هل يمكن جدولة الهدية لتاريخ محدد؟' و 'ما هي طرق الدفع المتاحة داخل التطبيق؟'."
+            };
+            this.state.design = {
+              territories: "• <strong>الإقليم الأول (التقنية العصرية المبهجة):</strong> واجهات نظيفة مينيمليست مع لمسات لونية حيوية وعناصر تفاعلية سلسة تدعو للتفاعل.<br>• <strong>الإقليم الثاني (الفخامة الرقمية الهادئة):</strong> درجات الداكن المخملي مع لمسات إضاءة نيونية خافتة تعكس الحصرية والتميز.<br>• <strong>الإقليم الثالث (البساطة والوضوح المطلق):</strong> مساحات بيضاء واسعة، تايبوغرافي هندسي مقروء جداً، وأيقونات مبسطة ترشد المستخدم بخفة.",
+              logo: "أيقونة تجريدية هندسية ذكية تدمج عقدة شريط الهدية مع رمز السهم أو الحرف الأول للبراند، صُممت لتكون أيقونة تطبيق واضحة وجذابة على شاشات الجوال.",
+              palette: `
+                <div class="color-swatch-box"><div style="display:flex;align-items:center;gap:8px;"><div class="color-preview-circle" style="background:#38bdf8;"></div><strong>الأزرق السيبراني (#38BDF8)</strong></div><span style="font-size:10px;color:var(--text-muted);">الثقة والتقنية</span></div>
+                <div class="color-swatch-box"><div style="display:flex;align-items:center;gap:8px;"><div class="color-preview-circle" style="background:#1e1e24;"></div><strong>الأسود المخملي (#1E1E24)</strong></div><span style="font-size:10px;color:var(--text-muted);">الوضوح والفخامة</span></div>
+                <div class="color-swatch-box"><div style="display:flex;align-items:center;gap:8px;"><div class="color-preview-circle" style="background:#f8fafc;"></div><strong>الأبيض النقي (#F8FAFC)</strong></div><span style="font-size:10px;color:var(--text-muted);">راحة القراءة</span></div>
+              `
+            };
+            this.state.targeting = {
+              platforms: "• <strong>إنستغرام وتيك توك (50% من الميزانية):</strong> استعراض ردود أفعال المستلمين لحظة استلام وفتح الهدية.<br>• <strong>إعلانات تنزيل التطبيقات App Install (35%):</strong> حملات جوجل بلاي وآبل سيرش لاكتساب مستخدمين جدد.<br>• <strong>سناب شات ولينكد إن (15%):</strong> استهداف هدايا الشركات والمناسبات الاجتماعية.",
+              audience: "مستخدمو الموبايل الحديث، المهتمون بالتسوق الإلكتروني وتطبيقات الرفاهية، الفئات العمرية 20-45 سنة في المدن الكبرى.",
+              hooks: `• <strong>الريل 1 (المأزق المحرج):</strong> [Visual: شخص يبتسم بتوتر وهو يتذكر مناسبة في نفس اليوم] ➡️ 'نسيت عيد ميلادها؟ متقلقش، طلبك متغلف ومكتوب عليه اسمك ويوصل قبل ما ترجع البيت.'<br>
+                      • <strong>الريل 2 (لحظة فتح الصندوق):</strong> [Visual: إهداء أنيق يفتح بفيونكة حريرية وابتسامة صادقة] ➡️ 'الهدية مش بقيمتها.. الهدية بالتفصيلة اللي تفرّح القلب.'<br>
+                      • <strong>الريل 3 (كود الحصري):</strong> [Visual: نقرة واحدة على شاشة الموبايل بـ Apple Pay] ➡️ 'حمل التطبيق الآن واستخدم كود الخصم الحصري مع توصيل فوري مجاني.'`
+            };
+          } else {
+            // General / Luxury Perfume / Corporate Brand Default
+            this.state.research = {
+              trends: "يشهد سوق السلع الفاخرة والعطور النيش في المنطقة نمواً يتجاوز 11.2% سنوياً ليتخطى 3.8 مليار دولار. المستهلك العربي والخليجي يتجه بقوة نحو 'الفخامة الهادئة غير المتكلفة' (Quiet Luxury)، والابتعاد عن البهرجة المبالغ فيها لصالح المنتجات ذات الأصالة الحقيقية والقصة الأجدادية الموثقة.",
+              gaps: "أغلب المنافسين يقعون في التكرار البصري المبتذل واستخدام زجاجات تقليدية متشابهة؛ 82% من جيل الشباب الواعي يرفضون الزخرفة الذهبية الكثيفة ويفضلون التصميم المعماري الصرحي. الثغرة التنافسية الكبرى هي تأسيس براند يمثل 'السيادة والوقار والأصالة' بتصميم حجر بازلتي هادئ ومكونات صافية غير مغلوبة.",
+              audience: "نخبة المجتمع، رجال وسيدات الأعمال، والمقتنون المميزون (25-52 سنة). محفزات الشراء: الرغبة في التميز بهيبة غير متكلفة، امتلاك قطعة تمثل مكانتهم الاجتماعية، ورائحة أجدادية نادرة؛ المخاوف: دفع مبالغ طائلة في منتجات تركيبتها مصنعة أو تجارية مكررة.",
+              objections: "المخاوف الرئيسية: التشكيك في نقاوة المكونات ونسب التعتيق الحقيقية. خطة العلاج والتطمين: إرفاق شهادة أصل موثقة مع كل عبوة، وتسليط الضوء على سنة التقطير والمصدر الطبيعي بالوثائق والفيديو الميداني.",
+              search: "الكلمات المفتاحية عالية النية الشرائية: 'دهن عود معتق صافي'، 'عطور نيش فاخرة الرياض دبي'، 'أفضل عطور المناسبات الرسمية'. الأسئلة الشائعة: 'ما هي مدة ثبات وفوحان العطر؟' و 'ما الذي يميز هذا الإصدار عن العطور العالمية المعتادة؟'."
+            };
+            this.state.design = {
+              territories: "• <strong>الإقليم الأول (الصرح السيادي):</strong> كتل صخرية بازلتية سوداء منحوتة، نحاس ممشط، وظلال معمارية مهيبة تعكس الثقة والوقار المطلق.<br>• <strong>الإقليم الثاني (كيمياء الذهب السائل):</strong> لقطات ماكرو مقربة لانكسار الضوء عبر قطرات المكونات الصافية وعينات زجاجية فاخرة.<br>• <strong>الإقليم الثالث (المخطوطة الأجدادية):</strong> كوفي عربي حديث حاد الزوايا منقوش على ورق قطني ثقيل بأسلوب المينيمليست المعاصر.",
+              logo: "مونوغرام ملكي صرحي يدمج الأحرف الأولى بشكل رمزي مع درع سيادي، مصمم ليعمل على الزجاج والمعادن والشاشات والمطبوعات.",
+              palette: `
+                <div class="color-swatch-box"><div style="display:flex;align-items:center;gap:8px;"><div class="color-preview-circle" style="background:#070e24;"></div><strong>الكحلي الليلي الملكي (#070E24)</strong></div><span style="font-size:10px;color:var(--text-muted);">العمق والسيادة</span></div>
+                <div class="color-swatch-box"><div style="display:flex;align-items:center;gap:8px;"><div class="color-preview-circle" style="background:#d4af37;"></div><strong>الذهب الممشط الشاحب (#D4AF37)</strong></div><span style="font-size:10px;color:var(--text-muted);">الفخامة الأجدادية الهادئة</span></div>
+                <div class="color-swatch-box"><div style="display:flex;align-items:center;gap:8px;"><div class="color-preview-circle" style="background:#121722;"></div><strong>حجر الأوبسيديان المدخن (#121722)</strong></div><span style="font-size:10px;color:var(--text-muted);">الهيبة المعمارية</span></div>
+              `
+            };
+            this.state.targeting = {
+              platforms: "• <strong>سناب شات وإنستغرام ريلز (50% من الصرف):</strong> لقطات سينمائية بطيئة وتفاصيل الخامات المترفة والفخامة الحصرية.<br>• <strong>تيك توك (30% من الصرف):</strong> فتح العلب الفاخرة (Unboxing ASMR) وردود فعل خبراء التذوق الموثوقين.<br>• <strong>جوجل وسيرش (20% من الصرف):</strong> استهداف الكلمات ذات النية الشرائية الصريحة للمنتجات الفاخرة النيش.",
+              audience: "نخبة المجتمع، المهتمون بالسلع الفاخرة والمقتنيات الاستثنائية، الفئات العمرية 24-52 سنة في العواصم والمدن الكبرى.",
+              hooks: `• <strong>الريل 1 (الهيبة الصامتة):</strong> [Visual: دخول شخص واثق لمجلس رسمي دون كلام] ➡️ 'في حضور بيتكلم عن هيبتك قبل ما تنطق بحرف واحد.. الرائحة التي تسبق حضورك.'<br>
+                      • <strong>الريل 2 (أربعة عقود في قطرة):</strong> [Visual: سقوط قطرة دهن عود لزجة على معصم اليد مع انعكاس الضوء] ➡️ 'مش كل العطور اتعملت عشان تتشم.. في عطور اتصنعت عشان تتخلد في الذاكرة.'<br>
+                      • <strong>الريل 3 (صوت الفتح الفاخر):</strong> [Visual: سحب الغطاء المغناطيسي الثقيل بصوت نقرة معدنية رزينة ASMR] ➡️ 'التفاصيل اللي ميعرفش قيمتها غير اللي يستحقها. احجز إصدارك المحدود الآن.'`
+            };
+          }
+
+          // 4. Generate Detailed Tasks explicitly mapped to the entered employee names
+          this.generateTasksSchedule();
+
+          // 5. Render to UI safely
+          this.renderOutputs();
+
+          // Show Results Section
+          const resSec = document.getElementById('results-section');
+          if (resSec) {
+            resSec.classList.add('active');
+            resSec.scrollIntoView({ behavior: 'smooth' });
+          }
+
+          this.showToast('تم توليد الخطة بالكامل بنجاح!');
+        } catch (err) {
+          console.error("Error generating plan:", err);
+          alert("حدث خطأ أثناء تشغيل المحرك: " + err.message);
+        }
+      },
+
+      generateTasksSchedule: function() {
+        const team = this.state.selectedTeam;
+        const start = this.state.startDate;
+
+        const rawTasks = [
+          { code: "T-01", name: "استكشاف وتفكيك مصفوفة المنافسين واستخراج الثغرات", type: "أبحاث وتحليل", roleKey: "operations", role: "مدير العمليات", owner: team.operations, hours: 14, days: 2, crit: true },
+          { code: "T-02", name: "صياغة التموضع الاستراتيجي للعلامة والوعد الجوهري", type: "استراتيجية", roleKey: "operations", role: "مدير العمليات", owner: team.operations, hours: 16, days: 2, crit: true },
+          { code: "T-03", name: "البوابة 1: اجتماع اعتماد الاستراتيجية والتموضع مع العميل", type: "إدارة حسابات", roleKey: "accountManager", role: "أكونت مانجر", owner: team.accountManager, hours: 6, days: 1, crit: true },
+          { code: "T-04", name: "تطوير 3 أقاليم بصرية متكاملة وعينات المواد الإبداعية", type: "توجيه إبداعي", roleKey: "designer", role: "ديزاينر", owner: team.designer, hours: 18, days: 3, crit: true },
+          { code: "T-05", name: "البوابة 2: اختيار العميل للإقليم البصري المعتمد", type: "إدارة حسابات", roleKey: "accountManager", role: "أكونت مانجر", owner: team.accountManager, hours: 6, days: 1, crit: true },
+          { code: "T-06", name: "تصميم مونوغرام الشعار الملكي ورسم الفيكتور الهندسي", type: "تصميم هوية", roleKey: "designer", role: "ديزاينر", owner: team.designer, hours: 20, days: 3, crit: true },
+          { code: "T-07", name: "تطوير وضبط التايبوغرافي الكوفي العربي واللاتيني المنسق", type: "تصميم هوية", roleKey: "designer", role: "ديزاينر", owner: team.designer, hours: 14, days: 2, crit: false },
+          { code: "T-08", name: "تحديد كتالوج الألوان الدقيق وأكواد البانتون والفويل", type: "تصميم هوية", roleKey: "designer", role: "ديزاينر", owner: team.designer, hours: 10, days: 2, crit: false },
+          { code: "T-09", name: "البوابة 3: اعتماد الشعار ونظام الخطوط والألوان رسمياً", type: "إدارة حسابات", roleKey: "accountManager", role: "أكونت مانجر", owner: team.accountManager, hours: 6, days: 1, crit: true },
+          { code: "T-10", name: "كتابة المانيفستو والقصة التأسيسية ونبرة الصوت", type: "صناعة محتوى", roleKey: "content", role: "كونتنت", owner: team.content, hours: 16, days: 2, crit: false },
+          { code: "T-11", name: "صياغة سيناريوهات إعلانات السوشيال ميديا وحملة الإطلاق", type: "صناعة محتوى", roleKey: "content", role: "كونتنت", owner: team.content, hours: 14, days: 2, crit: false },
+          { code: "T-12", name: "تصوير ومونتاج وإخراج سلسلة فيديوهات الريلز الإعلانية", type: "إنتاج وموشن", roleKey: "reelCreator", role: "ريل كريتور", owner: team.reelCreator, hours: 22, days: 3, crit: true },
+          { code: "T-13", name: "تصميم العبوات الرئيسية ومواصفات التغليف والطباعة", type: "تصميم وتغليف", roleKey: "designer", role: "ديزاينر", owner: team.designer, hours: 22, days: 3, crit: true },
+          { code: "T-14", name: "البوابة 4: الاعتماد الفني لقوالب التغليف والمحتوى", type: "إدارة حسابات", roleKey: "accountManager", role: "أكونت مانجر", owner: team.accountManager, hours: 6, days: 1, crit: true },
+          { code: "T-15", name: "برمجة وتطوير الموقع الإلكتروني / المتجر الرقمي", type: "تطوير ويب", roleKey: "developer", role: "ديفلوبر", owner: team.developer, hours: 28, days: 4, crit: true },
+          { code: "T-16", name: "إعداد بكسلات التتبع وميزانيات الميديا باينج وحملات الصرف", type: "ميديا باينج", roleKey: "mediaBuyer", role: "ميديا باير", owner: team.mediaBuyer, hours: 16, days: 2, crit: false },
+          { code: "T-17", name: "جدولة وتوزيع المحتوى على المنصات الرقمية وتجهيز النشر", type: "نشر وتوزيع", roleKey: "publisher", role: "بابليشر", owner: team.publisher, hours: 14, days: 2, crit: false },
+          { code: "T-18", name: "إعداد وتصميم كتاب الهوية البصرية الشامل (Brand Bible)", type: "تصميم وتوثيق", roleKey: "designer", role: "ديزاينر", owner: team.designer, hours: 20, days: 3, crit: false },
+          { code: "T-19", name: "البوابة 6: الاعتماد النهائي الشامل والإذن بالإطلاق", type: "إدارة حسابات", roleKey: "accountManager", role: "أكونت مانجر", owner: team.accountManager, hours: 8, days: 1, crit: true },
+          { code: "T-20", name: "تدشين المتجر لايف، انطلاق الإعلانات، وإعلان ميلاد البراند", type: "إطلاق وعمليات", roleKey: "operations", role: "مدير العمليات", owner: team.operations, hours: 10, days: 1, crit: true }
+        ];
+
+        let currentDayOffset = 0;
+        this.state.generatedTasks = rawTasks.map(t => {
+          const taskStart = this.addWorkingDays(start, currentDayOffset);
+          const taskEnd = this.addWorkingDays(taskStart, t.days - 1);
+          if (t.crit) {
+            currentDayOffset += t.days;
+          }
+          return {
+            ...t,
+            startDate: taskStart,
+            endDate: taskEnd
+          };
+        });
+      },
+
+      renderOutputs: function() {
+        const totalHours = this.state.generatedTasks.reduce((s, t) => s + t.hours, 0);
+
+        // Overview Tab
+        this.safeSetText('ov-proj-title', this.state.projectName);
+        this.safeSetText('ov-client-title', this.state.clientName);
+        this.safeSetHTML('ov-dates-summary', `تاريخ البدء: <strong>${this.formatArabicDate(this.state.startDate)}</strong><br>الإطلاق المستهدف: <strong>${this.formatArabicDate(this.state.targetLaunchDate)}</strong> (${this.state.durationWeeks} أسابيع)`);
+        this.safeSetText('ov-total-hours', `${totalHours} ساعة عمل`);
+
+        const tm = this.state.selectedTeam;
+        this.safeSetHTML('ov-team-summary', `
+          <div>✍️ كونتنت: <strong>${tm.content}</strong></div>
+          <div>🎨 ديزاينر: <strong>${tm.designer}</strong></div>
+          <div>📢 بابليشر: <strong>${tm.publisher}</strong></div>
+          <div>💻 ديفلوبر: <strong>${tm.developer}</strong></div>
+          <div>🎬 ريل كريتور: <strong>${tm.reelCreator}</strong></div>
+          <div>🎯 ميديا باير: <strong>${tm.mediaBuyer}</strong></div>
+          <div>👔 أكونت مانجر: <strong>${tm.accountManager}</strong></div>
+          <div>⚙️ مدير العمليات: <strong>${tm.operations}</strong></div>
+        `);
+
+        // Research Tab (Matches HTML IDs 100%)
+        this.safeSetHTML('res-market-trends', this.state.research.trends);
+        this.safeSetHTML('res-competitor-gaps', this.state.research.gaps);
+        this.safeSetHTML('res-audience-persona', this.state.research.audience);
+        this.safeSetHTML('res-objections-handling', this.state.research.objections);
+        this.safeSetHTML('res-search-intent', this.state.research.search);
+
+        // Design Tab
+        this.safeSetHTML('des-territories', this.state.design.territories);
+        this.safeSetHTML('des-logo', this.state.design.logo);
+        this.safeSetHTML('des-palette', this.state.design.palette);
+
+        // Targeting Tab (Matches HTML IDs 100%)
+        this.safeSetHTML('tgt-platforms', this.state.targeting.platforms);
+        this.safeSetHTML('tgt-audience', this.state.targeting.audience);
+        this.safeSetHTML('tgt-hooks', this.state.targeting.hooks);
+
+        // Tasks Table
+        const tbody = document.getElementById('tasks-table-body');
+        if (tbody) {
+          tbody.innerHTML = this.state.generatedTasks.map(t => `
+            <tr>
+              <td style="font-weight: 800; color: var(--romeya-gold);">${t.code}</td>
+              <td>
+                <strong style="color: #fff;">${t.name}</strong>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">الدور: ${t.role} (${t.owner})</div>
+              </td>
+              <td><span class="badge ${t.crit ? 'badge-crit' : 'badge-normal'}">${t.type}</span></td>
+              <td><strong style="color: #fff;">${t.owner}</strong></td>
+              <td style="font-weight: 800; color: var(--text-primary); text-align: center;">${t.hours} س</td>
+              <td style="font-size: 11.5px;">${this.formatArabicDate(t.startDate)}</td>
+              <td style="font-size: 11.5px; font-weight: 700; color: ${t.crit ? 'var(--romeya-red)' : 'var(--text-primary)'};">${this.formatArabicDate(t.endDate)}</td>
+              <td>
+                ${t.crit ? '<span class="badge badge-crit">مسار حرج ⚠️</span>' : '<span class="badge badge-normal">عادي</span>'}
+              </td>
+            </tr>
+          `).join('');
+        }
+
+        // Gantt Chart
+        const ganttContainer = document.getElementById('gantt-rows-container');
+        if (ganttContainer) {
+          ganttContainer.innerHTML = this.state.generatedTasks.map((t, idx) => `
+            <div class="gantt-row">
+              <div class="gantt-label">
+                <strong>${t.code}</strong>: ${t.name.substring(0, 32)}...
+              </div>
+              <div class="gantt-bar-wrap">
+                <div class="gantt-bar ${t.crit ? 'crit' : ''}" style="width: ${Math.max(16, t.days * 18)}px; margin-right: ${(idx % 7) * 22}px;">
+                  ${t.days} أيام (${t.hours}س)
+                </div>
+              </div>
+              <div class="gantt-dates">${this.formatArabicDate(t.startDate)} ⬅️ ${this.formatArabicDate(t.endDate)}</div>
+            </div>
+          `).join('');
+        }
+
+        // Team Capacity
+        const teamMap = {};
+        this.state.generatedTasks.forEach(t => {
+          if (!teamMap[t.owner]) {
+            teamMap[t.owner] = { role: t.role, hours: 0, tasksCount: 0, tasks: [] };
+          }
+          teamMap[t.owner].hours += t.hours;
+          teamMap[t.owner].tasksCount += 1;
+          teamMap[t.owner].tasks.push(t.name);
+        });
+
+        const capGrid = document.getElementById('team-capacity-grid');
+        if (capGrid) {
+          capGrid.innerHTML = Object.entries(teamMap).map(([name, data]) => {
+            const capPercent = Math.min(100, Math.round((data.hours / 120) * 100));
+            return `
+              <div class="content-box">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                  <div>
+                    <strong style="color: #fff; font-size: 14px;">${name}</strong>
+                    <div style="font-size: 11px; color: var(--romeya-gold);">${data.role}</div>
+                  </div>
+                  <span class="badge ${data.hours > 80 ? 'badge-crit' : 'badge-normal'}">${data.hours} ساعة عمل</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">
+                  المهام الموكلة: <strong>${data.tasksCount} مهام</strong>
+                </div>
+                <div class="capacity-bar-wrap">
+                  <div class="capacity-bar" style="width: ${capPercent}%;"></div>
+                </div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px; text-align: left;">
+                  مستوى الاستيعاب التقديري: ${capPercent}%
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+
+        // Individual Role PDF Cards
+        const roleGrid = document.getElementById('role-pdf-cards-container');
+        if (roleGrid) {
+          roleGrid.innerHTML = Object.entries(teamMap).map(([name, data]) => `
+            <div class="content-box" style="display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                  <div>
+                    <strong style="color: #fff; font-size: 14px;">${name}</strong>
+                    <div style="font-size: 11px; color: var(--romeya-gold);">${data.role}</div>
+                  </div>
+                  <span class="badge badge-normal">${data.tasksCount} مهام</span>
+                </div>
+                <div style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+                  إجمالي ساعات العمل: <strong>${data.hours} ساعة</strong><br>
+                  أبرز المهام: ${data.tasks.slice(0, 2).join('، ')}...
+                </div>
+              </div>
+              <button class="btn btn-secondary" style="width: 100%; font-size: 11.5px; padding: 8px;" onclick="RomeyaApp.printStaffCard('${name.replace(/'/g, "\\'")}')">
+                <span>🖨️</span> استخراج بطاقة التكليف (PDF)
+              </button>
+            </div>
+          `).join('');
+        }
+      },
+
+      exportOdooCSV: function() {
+        if (!this.state.projectName || !this.state.generatedTasks || this.state.generatedTasks.length === 0) {
+          // If not generated, run generateAll first
+          this.generateAll();
+        }
+
+        const headers = [
+          'name',
+          'project_id/name',
+          'user_ids/name',
+          'date_assign',
+          'date_deadline',
+          'description',
+          'tag_ids/name',
+          'planned_hours',
+          'priority'
+        ];
+
+        const rows = this.state.generatedTasks.map(t => {
+          const taskName = `[${t.code}] ${t.name}`;
+          const projectName = this.state.projectName || 'مشروع جديد';
+          const assignedUser = t.owner || t.role;
+          const dateStart = t.startDate || '';
+          const dateEnd = t.endDate || '';
+          const desc = `<p><strong>كود المهمة:</strong> ${t.code}</p><p><strong>القسم / النوع:</strong> ${t.type}</p><p><strong>الدور الوظيفي:</strong> ${t.role}</p><p><strong>الساعات التقديرية:</strong> ${t.hours} ساعة</p><p><strong>أولوية المسار:</strong> ${t.crit ? 'مسار حرج إلزامي' : 'مهمة تزامنية'}</p>`;
+          const tags = [t.type, t.role, t.crit ? 'مسار حرج' : 'عادي'].join(',');
+          const hours = t.hours || 0;
+          const priority = t.crit ? '1' : '0';
+
+          return [
+            `"${taskName.replace(/"/g, '""')}"`,
+            `"${projectName.replace(/"/g, '""')}"`,
+            `"${assignedUser.replace(/"/g, '""')}"`,
+            `"${dateStart}"`,
+            `"${dateEnd}"`,
+            `"${desc.replace(/"/g, '""')}"`,
+            `"${tags.replace(/"/g, '""')}"`,
+            hours,
+            priority
+          ].join(',');
+        });
+
+        const csvContent = '\uFEFF' + headers.join(',') + '\n' + rows.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        const safeProjName = (this.state.projectName || 'Romeya').replace(/[^a-zA-Z0-9\u0600-\u06FF_-]/g, '_');
+        link.setAttribute('download', `Romeya_Odoo_Tasks_${safeProjName}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        this.openOdooModal();
+      },
+
+      openOdooModal: function() {
+        const modal = document.getElementById('odoo-modal');
+        if (modal) modal.classList.add('active');
+      },
+
+      closeOdooModal: function() {
+        const modal = document.getElementById('odoo-modal');
+        if (modal) modal.classList.remove('active');
+      },
+
+      openDepartmentModal: function() {
+        if (!this.state.projectName || !this.state.generatedTasks || this.state.generatedTasks.length === 0) {
+          this.generateAll();
+        }
+        const modal = document.getElementById('dept-modal');
+        if (modal) modal.classList.add('active');
+      },
+
+      closeDepartmentModal: function() {
+        const modal = document.getElementById('dept-modal');
+        if (modal) modal.classList.remove('active');
+      },
+
+      getDepartmentData: function(deptKey) {
+        const team = this.state.selectedTeam;
+
+        const depts = {
+          research_media: {
+            title: "قسم أبحاث السوق والاستراتيجية والميديا باينج",
+            englishTitle: "Market Research, Strategy & Media Buying Department",
+            lead: `${team.operations} و ${team.mediaBuyer}`,
+            taskCodes: ["T-01", "T-02", "T-16", "T-20"],
+            summary: "يتولى هذا القسم استكشاف مؤشرات السوق، وتحليل مصفوفة المنافسين، ورصد الثغرة التنافسية، وتشريح سلوك ودوافع الجمهور النفسية، وإدارة ميزانيات الصرف وبكسلات التتبع الإعلانية.",
+            insights: [
+              { label: "1. مؤشرات حجم السوق والنمو المركب (CAGR):", content: this.state.research.trends },
+              { label: "2. تفكيك المنافسين واقتناص الثغرة التنافسية الذهبية:", content: this.state.research.gaps },
+              { label: "3. التشريح النفسي والسلوكي للجمهور ومحفزات الشراء:", content: this.state.research.audience },
+              { label: "4. معالجة مخاوف وموانع الشراء وخطة التطمين:", content: this.state.research.objections },
+              { label: "5. الكلمات المفتاحية عالية النية الشرائية:", content: this.state.research.search },
+              { label: "6. استراتيجية منصات الميديا باينج وتوزيع الميزانية:", content: this.state.targeting.platforms }
+            ],
+            kpis: [
+              "دقة رصد المنافسين وعدم إغفال أي منافس مباشر في النطاق الجغرافي المستهدف.",
+              "تحقيق أدنى تكلفة اكتساب عميل محتمل (Lowest CPA) عبر المنصات المعتمدة.",
+              "سلامة ربط بكسلات التتبع (Meta Pixel, Google Tag, TikTok Pixel) بنسبة 100%."
+            ]
+          },
+          content_reels: {
+            title: "قسم المحتوى والكتابة الإبداعية والريلز",
+            englishTitle: "Creative Copywriting, Content & Reels Department",
+            lead: `${team.content} و ${team.reelCreator} و ${team.publisher}`,
+            taskCodes: ["T-10", "T-11", "T-12", "T-17"],
+            summary: "يتولى هذا القسم كتابة القصة التأسيسية للمشروع، صياغة المانيفستو ونبرة الصوت، إعداد مصفوفة خطافات وسيناريوهات الريلز، وإنتاج وتوزيع المحتوى الجذاب عبر المنصات الرقمية.",
+            insights: [
+              { label: "1. القصة التأسيسية والمانيفستو ونبرة الصوت:", content: "صياغة نبرة صوت تمثل أصالة ووقار البراند وتخاطب عواطف واحتياجات الجمهور المستهدف بأسلوب أصيل ومباشر." },
+              { label: "2. دوافع الجمهور المستهدف ومحفزات التحويل:", content: this.state.research.audience },
+              { label: "3. مصفوفة خطافات وسيناريوهات الريلز الجاهزة للإنتاج:", content: this.state.targeting.hooks },
+              { label: "4. خطة معالجة اعتراضات الشراء داخل المحتوى الإعلاني:", content: this.state.research.objections },
+              { label: "5. خطة النشر والجدولة وتوزيع المحتوى على المنصات:", content: this.state.targeting.platforms }
+            ],
+            kpis: [
+              "نسبة مشاهدة الـ 3 ثواني الأولى (Hook Retention Rate) تتجاوز 45% في الريلز.",
+              "تضمين عبارات الحث على اتخاذ إجراء (CTA) واضحة في كافة المنشورات والاسكربتات.",
+              "الالتزام بجدول النشر التزامني وفق أوقات الذروة المحددة لكل منصة."
+            ]
+          },
+          design_branding: {
+            title: "قسم التصميم والهوية البصرية والإنتاج الفني",
+            englishTitle: "Art Direction, Graphic Design & Visual Production",
+            lead: `${team.designer}`,
+            taskCodes: ["T-04", "T-06", "T-07", "T-08", "T-13", "T-18"],
+            summary: "يتولى هذا القسم صياغة التوجهات البصرية الثلاثة، رسم الشعار والمونوغرام، اختيار أنظمة الخطوط والألوان وأكواد الطباعة، وتصميم العبوات ودليل الهوية الشامل (Brand Bible).",
+            insights: [
+              { label: "1. الأقاليم البصرية المقترحة (Visual Territories):", content: this.state.design.territories },
+              { label: "2. التوجه الرمزي للشعار والمونوغرام:", content: this.state.design.logo },
+              { label: "3. باليت الألوان المعتمدة والدلالات النفسية:", content: this.state.design.palette },
+              { label: "4. مواصفات التغليف والطباعة والـ Brand Bible:", content: "تحديد مقاسات وأوزان علب المنتجات، خامات الورق، بصمة الفويل، ومواصفات التصدير للطباعة بصيغة CMYK و Pantone بدقة 300 DPI." }
+            ],
+            kpis: [
+              "تقديم 3 أقاليم بصرية متمايزة بالكامل تعطي العميل خيارات حقيقية ومقنعة.",
+              "تسليم كافة الملفات المصدرية المفتوحة (Vector / AI / EPS / SVG) بدقة طباعة 300 DPI.",
+              "تجهيز دليل الهوية الشامل (Brand Bible) بمواصفات المساحات الآمنة والتطبيقات الواقعية."
+            ]
+          },
+          ops_accounts: {
+            title: "قسم إدارة العمليات والحسابات والتطوير الرقمي",
+            englishTitle: "Operations, Account Management & Digital Development",
+            lead: `${team.operations} و ${team.accountManager} و ${team.developer}`,
+            taskCodes: ["T-03", "T-05", "T-09", "T-14", "T-15", "T-19", "T-20"],
+            summary: "يتولى هذا القسم إدارة العلاقة مع العميل وبوابات الاعتماد الرسمية الست، مراقبة المسار الحرج وتفادي التأخيرات، برمجة وتدشين المتجر الرقمي، والإشراف على الإطلاق النهائي.",
+            insights: [
+              { label: "1. مصفوفة بوابات الاعتماد الرسمية مع العميل (Client Approval Gates 1-6):", content: "Gate 1: اعتماد الاستراتيجية | Gate 2: اختيار الإقليم البصري | Gate 3: اعتماد الشعار والألوان | Gate 4: اعتماد التغليف والسكربتات | Gate 5: مراجعة المتجر | Gate 6: الإذن بالإطلاق." },
+              { label: "2. المسار الحرج (Critical Path Protocol):", content: "أي تأخير في تسليم مهام المسار الحرج يؤخر الإطلاق النهائي مباشرة بمقدار يوم بيوم؛ يجب تطبيق نظام المتابعة الصباحي اليومي." },
+              { label: "3. مواصفات تطوير المتجر الرقمي والبنية التحتية:", content: "تأمين سرعة تحميل المتجر أقل من 2.2 ثانية، تجربة مستخدم موبايل ممتازة، وربط بوابات الدفع والشحن المعتمدة." }
+            ],
+            kpis: [
+              "الحصول على توقيع وموافقة العميل المكتوبة على كل بوابة اعتماد قبل بدء المرحلة التالية.",
+              "صفر تأخيرات في مهام المسار الحرج (Zero Critical-Path Delays).",
+              "اختبار رحلة الشراء كاملة على المتجر بنجاح قبل موعد التدشين المباشر بـ 48 ساعة."
+            ]
+          }
+        };
+
+        return depts[deptKey] || null;
+      },
+
+      renderSingleDeptHTML: function(deptKey) {
+        const dept = this.getDepartmentData(deptKey);
+        if (!dept) return '';
+
+        const deptTasks = this.state.generatedTasks.filter(t => dept.taskCodes.includes(t.code));
+        const totalDeptHours = deptTasks.reduce((s, t) => s + t.hours, 0);
+
+        return `
+          <div class="dept-page">
+            <div class="header">
+              <div>
+                <div class="title">وكالة Romeya للتسويق — تقرير تكليف وخطة عمل القسم الرسمي</div>
+                <div class="sub">${dept.title} | ${dept.englishTitle}</div>
+              </div>
+              <div style="text-align: left; font-size: 10.5px; color: #64748b;">
+                تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-EG')}<br>
+                وثيقة تشغيلية معتمدة
+              </div>
+            </div>
+
+            <div class="meta-grid">
+              <div class="meta-item"><strong>اسم المشروع:</strong> ${this.state.projectName}</div>
+              <div class="meta-item"><strong>اسم العميل:</strong> ${this.state.clientName}</div>
+              <div class="meta-item"><strong>القسم المعني:</strong> ${dept.title}</div>
+              <div class="meta-item"><strong>المكلفون من الفريق:</strong> ${dept.lead}</div>
+              <div class="meta-item"><strong>إجمالي ساعات عمل القسم:</strong> ${totalDeptHours} ساعة عمل</div>
+              <div class="meta-item"><strong>الموعد المستهدف للإطلاق:</strong> ${this.formatArabicDate(this.state.targetLaunchDate)}</div>
+            </div>
+
+            <div class="section-title">📌 نظرة عامة وتوجيهات القسم من البريف:</div>
+            <div class="box" style="margin-bottom: 12px; font-size: 11.5px; line-height: 1.6;">
+              ${dept.summary}
+            </div>
+
+            <div class="section-title">🔍 المدخلات الاستراتيجية والبيانات المرجعية للقسم:</div>
+            ${dept.insights.map(item => `
+              <div class="box">
+                <strong style="color: #0284c7;">${item.label}</strong><br>
+                ${item.content}
+              </div>
+            `).join('')}
+
+            <div class="section-title">📋 جدول المهام التنفيذية الحصري للقسم (أيام العمل الفعلية):</div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 50px;">كود</th>
+                  <th>اسم المهمة والتسليمة المطلوبة</th>
+                  <th style="width: 130px;">المسؤول المكلف</th>
+                  <th style="width: 50px; text-align: center;">ساعات</th>
+                  <th style="width: 90px;">تاريخ البدء</th>
+                  <th style="width: 90px;">تاريخ الاستحقاق</th>
+                  <th style="width: 75px;">المسار الحرج</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${deptTasks.map(t => `
+                  <tr>
+                    <td style="font-weight: bold; color: #b45309;">${t.code}</td>
+                    <td><strong>${t.name}</strong></td>
+                    <td><strong>${t.owner}</strong></td>
+                    <td style="text-align: center; font-weight: bold;">${t.hours} س</td>
+                    <td>${this.formatArabicDate(t.startDate)}</td>
+                    <td style="font-weight: bold;">${this.formatArabicDate(t.endDate)}</td>
+                    <td class="${t.crit ? 'crit' : ''}">${t.crit ? 'مسار حرج' : 'عادي'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+
+            <div class="section-title">🎯 معايير القبول والجودة وضوابط التسليم (Quality KPIs):</div>
+            <div class="box" style="margin-bottom: 20px;">
+              <ul style="margin: 0; padding-right: 18px; font-size: 11px; line-height: 1.7;">
+                ${dept.kpis.map(kpi => `<li>${kpi}</li>`).join('')}
+              </ul>
+            </div>
+
+            <div class="signatures">
+              <div>
+                <strong>اعتماد مدير العمليات (وكالة Romeya):</strong> شادي عاطف حسن غالي
+                <div class="sign-line">التوقيع والختم: ............................................</div>
+              </div>
+              <div>
+                <strong>استلام وتعهد مسؤول القسم:</strong> ${dept.lead}
+                <div class="sign-line">التوقيع والتاريخ: ............................................</div>
+              </div>
+            </div>
+          </div>
+        `;
+      },
+
+      printDepartmentPDF: function(deptKey) {
+        if (!this.state.projectName || !this.state.generatedTasks || this.state.generatedTasks.length === 0) {
+          this.generateAll();
+        }
+
+        const keysToPrint = deptKey === 'all' 
+          ? ['research_media', 'content_reels', 'design_branding', 'ops_accounts']
+          : [deptKey];
+
+        const renderedPages = keysToPrint.map(k => this.renderSingleDeptHTML(k)).join('<div class="page-break"></div>');
+
+        const printWindow = window.open('', '_blank');
+        const printHtml = `
+          <!DOCTYPE html>
+          <html lang="ar" dir="rtl">
+          <head>
+            <meta charset="UTF-8">
+            <title>تقارير الأقسام — ${this.state.projectName} — وكالة Romeya</title>
+            <style>
+              @page { size: A4 portrait; margin: 15mm 12mm 15mm 12mm; }
+              body { font-family: 'Cairo', 'Tajawal', sans-serif; direction: rtl; padding: 25px; color: #111; line-height: 1.5; font-size: 11px; }
+              .header { border-bottom: 2.5px solid #000; padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-end; }
+              .title { font-size: 18px; font-weight: 900; color: #050a1e; }
+              .sub { font-size: 11.5px; color: #b45309; margin-top: 2px; font-weight: 700; }
+              .meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px; border-radius: 6px; margin-bottom: 14px; }
+              .meta-item strong { display: block; color: #475569; font-size: 9.5px; text-transform: uppercase; }
+              .section-title { font-size: 13px; font-weight: 800; color: #0f172a; margin: 12px 0 6px 0; border-right: 3px solid #b45309; padding-right: 8px; }
+              .box { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 9px 12px; border-radius: 4px; margin-bottom: 8px; }
+              table { width: 100%; border-collapse: collapse; margin-top: 8px; margin-bottom: 14px; font-size: 10.5px; }
+              th, td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: right; }
+              th { background: #0f172a; color: #fff; font-weight: 800; }
+              tr:nth-child(even) { background: #f8fafc; }
+              .crit { color: #dc2626; font-weight: 800; }
+              .signatures { margin-top: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; border-top: 1.5px solid #000; padding-top: 14px; }
+              .sign-line { border-top: 1px dashed #64748b; margin-top: 35px; padding-top: 4px; font-size: 10px; }
+              .page-break { page-break-after: always; margin-bottom: 30px; }
+            </style>
+          </head>
+          <body>
+            ${renderedPages}
+            <script>
+              window.onload = function() {
+                window.print();
+              };
+            <\/script>
+          </body>
+          </html>
+        `;
+
+        printWindow.document.open();
+        printWindow.document.write(printHtml);
+        printWindow.document.close();
+      },
+
+      printMasterProjectPDF: function() {
+        if (!this.state.projectName || !this.state.generatedTasks || this.state.generatedTasks.length === 0) {
+          this.generateAll();
+        }
+
+        const totalHours = this.state.generatedTasks.reduce((s, t) => s + t.hours, 0);
+        const tm = this.state.selectedTeam;
+
+        const printWindow = window.open('', '_blank');
+        const printHtml = `
+          <!DOCTYPE html>
+          <html lang="ar" dir="rtl">
+          <head>
+            <meta charset="UTF-8">
+            <title>خطة العمليات الشاملة — ${this.state.projectName} — وكالة Romeya</title>
+            <style>
+              body { font-family: 'Cairo', 'Tajawal', sans-serif; direction: rtl; padding: 30px; color: #111; line-height: 1.6; font-size: 11.5px; }
+              .header { border-bottom: 2.5px solid #000; padding-bottom: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
+              .title { font-size: 20px; font-weight: 900; color: #050a1e; }
+              .sub { font-size: 12px; color: #555; margin-top: 2px; }
+              .meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 6px; margin-bottom: 16px; }
+              .meta-item strong { display: block; color: #475569; font-size: 10px; text-transform: uppercase; }
+              .section-title { font-size: 14px; font-weight: 800; color: #0f172a; margin: 16px 0 8px 0; border-right: 3px solid #b45309; padding-right: 8px; }
+              .box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 6px; margin-bottom: 10px; }
+              table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px; }
+              th, td { border: 1px solid #cbd5e1; padding: 7px 10px; text-align: right; font-size: 11px; }
+              th { background: #0f172a; color: #fff; font-weight: bold; }
+              tr:nth-child(even) { background: #f8fafc; }
+              .crit { color: #dc2626; font-weight: bold; }
+              .page-break { page-break-after: always; margin-bottom: 30px; }
+              .signatures { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; border-top: 2px solid #000; padding-top: 16px; }
+              .sign-line { border-top: 1px dashed #64748b; margin-top: 35px; padding-top: 4px; font-size: 10.5px; }
+            </style>
+          </head>
+          <body>
+            <!-- PAGE 1: EXECUTIVE SUMMARY & RESEARCH -->
+            <div class="header">
+              <div>
+                <div class="title">وكالة Romeya للتسويق — التقرير الاستراتيجي وخطة التشغيل الرسمية</div>
+                <div class="sub">نظام العمليات الداخلي: من البريف إلى خطة التنفيذ المعتمدة</div>
+              </div>
+              <div style="text-align: left; font-size: 10.5px; color: #64748b;">
+                تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-EG')}<br>
+                وثيقة معتمدة وموجهة للإدارة والعميل
+              </div>
+            </div>
+
+            <div class="meta-grid">
+              <div class="meta-item"><strong>اسم المشروع:</strong> ${this.state.projectName}</div>
+              <div class="meta-item"><strong>اسم العميل:</strong> ${this.state.clientName}</div>
+              <div class="meta-item"><strong>مدة التنفيذ:</strong> ${this.state.durationWeeks} أسابيع (${this.state.durationWeeks * 5} يوم عمل)</div>
+              <div class="meta-item"><strong>تاريخ البدء:</strong> ${this.formatArabicDate(this.state.startDate)}</div>
+              <div class="meta-item"><strong>تاريخ الإطلاق المستهدف:</strong> ${this.formatArabicDate(this.state.targetLaunchDate)}</div>
+              <div class="meta-item"><strong>إجمالي ساعات المشروع:</strong> ${totalHours} ساعة عمل</div>
+            </div>
+
+            <div class="section-title">👥 فريق العمل المخصص للمشروع:</div>
+            <div class="box" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+              <div>✍️ كونتنت: <strong>${tm.content}</strong></div>
+              <div>🎨 ديزاينر: <strong>${tm.designer}</strong></div>
+              <div>📢 بابليشر: <strong>${tm.publisher}</strong></div>
+              <div>💻 ديفلوبر: <strong>${tm.developer}</strong></div>
+              <div>🎬 ريل كريتور: <strong>${tm.reelCreator}</strong></div>
+              <div>🎯 ميديا باير: <strong>${tm.mediaBuyer}</strong></div>
+              <div>👔 أكونت مانجر: <strong>${tm.accountManager}</strong></div>
+              <div>⚙️ إدارة العمليات: <strong>${tm.operations}</strong></div>
+            </div>
+
+            <div class="section-title">🔍 أولاً: استخبارات وبحوث السوق المتقدمة:</div>
+            <div class="box">
+              <strong style="color: #0284c7;">1. مؤشرات حجم السوق والنمو:</strong><br>
+              ${this.state.research.trends}
+            </div>
+            <div class="box">
+              <strong style="color: #e11d48;">2. مصفوفة تفكيك المنافسين والثغرة التنافسية:</strong><br>
+              ${this.state.research.gaps}
+            </div>
+            <div class="box">
+              <strong style="color: #d97706;">3. تشريح شخصية العميل ومحفزات الشراء:</strong><br>
+              ${this.state.research.audience}
+            </div>
+            <div class="box">
+              <strong style="color: #059669;">4. معالجة مخاوف وموانع الشراء:</strong><br>
+              ${this.state.research.objections}
+            </div>
+
+            <!-- PAGE 2: DESIGN & TARGETING -->
+            <div class="page-break"></div>
+            <div class="section-title">🎨 ثانياً: مقترحات التصميم والهوية البصرية:</div>
+            <div class="box">
+              <strong style="color: #7c3aed;">• الأقاليم البصرية المقترحة (Visual Territories):</strong><br>
+              ${this.state.design.territories}
+            </div>
+            <div class="box">
+              <strong style="color: #0284c7;">• اتجاه الشعار والرمزية (Logo Concept):</strong><br>
+              ${this.state.design.logo}
+            </div>
+
+            <div class="section-title">🎯 ثالثاً: استراتيجية الاستهداف والميديا باينج والريلز:</div>
+            <div class="box">
+              <strong>• المنصات المعتمدة ونسب الصرف:</strong><br>
+              ${this.state.targeting.platforms}
+            </div>
+            <div class="box">
+              <strong>• شرائح الاستهداف:</strong><br>
+              ${this.state.targeting.audience}
+            </div>
+            <div class="box">
+              <strong>• خطافات وسيناريوهات محتوى الريلز المخصصة:</strong><br>
+              ${this.state.targeting.hooks}
+            </div>
+
+            <!-- PAGE 3: MASTER TASKS TABLE -->
+            <div class="page-break"></div>
+            <div class="section-title">📋 رابعاً: جدول المهام التنفيذي الدقيق (أيام العمل الفعلية):</div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 45px;">كود</th>
+                  <th>المهمة والتسليمة الناتجة</th>
+                  <th style="width: 80px;">النوع</th>
+                  <th style="width: 120px;">المسؤول المكلف</th>
+                  <th style="width: 50px; text-align: center;">ساعات</th>
+                  <th style="width: 85px;">تاريخ البدء</th>
+                  <th style="width: 85px;">الاستحقاق</th>
+                  <th style="width: 70px;">المسار الحرج</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${this.state.generatedTasks.map(t => `
+                  <tr>
+                    <td style="font-weight: bold;">${t.code}</td>
+                    <td><strong>${t.name}</strong></td>
+                    <td>${t.type}</td>
+                    <td><strong>${t.owner}</strong></td>
+                    <td style="text-align: center; font-weight: bold;">${t.hours} س</td>
+                    <td>${this.formatArabicDate(t.startDate)}</td>
+                    <td style="font-weight: bold;">${this.formatArabicDate(t.endDate)}</td>
+                    <td class="${t.crit ? 'crit' : ''}">${t.crit ? 'مسار حرج' : 'عادي'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+
+            <div class="signatures">
+              <div>
+                <strong>اعتماد مدير العمليات (وكالة Romeya):</strong> شادي عاطف حسن غالي
+                <div class="sign-line">التوقيع والختم: ............................................</div>
+              </div>
+              <div>
+                <strong>موافقة واعتماد ممثل العميل:</strong> ${this.state.clientName}
+                <div class="sign-line">التوقيع والتاريخ: ............................................</div>
+              </div>
+            </div>
+
+            <script>
+              window.onload = function() {
+                window.print();
+              };
+            <\/script>
+          </body>
+          </html>
+        `;
+
+        printWindow.document.open();
+        printWindow.document.write(printHtml);
+        printWindow.document.close();
+      },
+
+      printStaffCard: function(staffName) {
+        if (!this.state.projectName || !this.state.generatedTasks || this.state.generatedTasks.length === 0) {
+          alert('يرجى توليد الخطة أولاً.');
+          return;
+        }
+
+        const staffTasks = this.state.generatedTasks.filter(t => t.owner === staffName);
+        const totalHours = staffTasks.reduce((s, t) => s + t.hours, 0);
+        const roleTitle = staffTasks.length > 0 ? staffTasks[0].role : 'عضو فريق العمل';
+
+        const printWindow = window.open('', '_blank');
+        const printHtml = `
+          <!DOCTYPE html>
+          <html lang="ar" dir="rtl">
+          <head>
+            <meta charset="UTF-8">
+            <title>بطاقة تكليف المهام — ${staffName}</title>
+            <style>
+              body { font-family: 'Cairo', 'Tajawal', sans-serif; direction: rtl; padding: 30px; color: #111; line-height: 1.6; }
+              .header { border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+              .title { font-size: 20px; font-weight: bold; }
+              .meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 6px; margin-bottom: 20px; }
+              .meta-item strong { display: block; color: #64748b; font-size: 11px; }
+              table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 24px; }
+              th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: right; }
+              th { background: #0f172a; color: #fff; }
+              tr:nth-child(even) { background: #f8fafc; }
+              .crit { color: #dc2626; font-weight: bold; }
+              .signatures { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; border-top: 2px solid #000; padding-top: 20px; }
+              .sign-line { border-top: 1px dashed #64748b; margin-top: 45px; padding-top: 6px; font-size: 11px; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <div>
+                <div class="title">وكالة Romeya للتسويق — بطاقة التكليف والمهام التنفيذية</div>
+                <div style="font-size: 12px; color: #64748b;">إدارة العمليات | مدير العمليات: شادي عاطف حسن غالي</div>
+              </div>
+              <div style="text-align: left; font-size: 11px; color: #64748b;">
+                تاريخ الإصدار: ${new Date().toLocaleDateString('ar-EG')}
+              </div>
+            </div>
+
+            <div class="meta-grid">
+              <div class="meta-item"><strong>اسم الموظف:</strong> ${staffName}</div>
+              <div class="meta-item"><strong>الدور الوظيفي:</strong> ${roleTitle}</div>
+              <div class="meta-item"><strong>المشروع:</strong> ${this.state.projectName}</div>
+              <div class="meta-item"><strong>العميل:</strong> ${this.state.clientName}</div>
+              <div class="meta-item"><strong>إجمالي المهام المكلف بها:</strong> ${staffTasks.length} مهام</div>
+              <div class="meta-item"><strong>إجمالي ساعات العمل:</strong> ${totalHours} ساعة</div>
+            </div>
+
+            <h3 style="font-size: 15px; margin-bottom: 8px;">📋 قائمة المهام المسندة والتسليمات المطلوبة:</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 50px;">كود</th>
+                  <th>اسم المهمة والتسليمة المطلوبة</th>
+                  <th style="width: 60px; text-align: center;">الساعات</th>
+                  <th style="width: 110px;">تاريخ البدء</th>
+                  <th style="width: 110px;">تاريخ الاستحقاق</th>
+                  <th style="width: 80px;">الأولوية</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${staffTasks.map(t => `
+                  <tr>
+                    <td style="font-weight: bold;">${t.code}</td>
+                    <td><strong>${t.name}</strong></td>
+                    <td style="text-align: center; font-weight: bold;">${t.hours} س</td>
+                    <td>${this.formatArabicDate(t.startDate)}</td>
+                    <td style="font-weight: bold;">${this.formatArabicDate(t.endDate)}</td>
+                    <td class="${t.crit ? 'crit' : ''}">${t.crit ? 'مسار حرج ⚠️' : 'عادي'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+
+            <div class="signatures">
+              <div>
+                <strong>اعتماد مدير العمليات (وكالة Romeya):</strong> شادي عاطف حسن غالي
+                <div class="sign-line">التوقيع: ............................................</div>
+              </div>
+              <div>
+                <strong>استلام وتعهد الموظف المسؤول:</strong> ${staffName}
+                <div class="sign-line">التوقيع والتاريخ: ............................................</div>
+              </div>
+            </div>
+
+            <script>
+              window.onload = function() {
+                window.print();
+              };
+            <\/script>
+          </body>
+          </html>
+        `;
+
+        printWindow.document.open();
+        printWindow.document.write(printHtml);
+        printWindow.document.close();
+      },
+
+      switchTab: function(tabId) {
+        document.querySelectorAll('.nav-tab').forEach(t => {
+          t.classList.toggle('active', t.dataset.tab === tabId);
+        });
+        document.querySelectorAll('.tab-pane').forEach(p => {
+          p.classList.toggle('active', p.id === tabId);
+        });
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+      RomeyaApp.init();
+    });
+  </script>
+
+</body>
+</html>
